@@ -13,7 +13,7 @@ jobs:
           command: yarn install
       - save_cache:
           key: dependency-cache-{{ checksum "yarn.lock" }}
-          path:
+          paths:
             - ./node_modules
   test:
     docker:
