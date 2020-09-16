@@ -1,27 +1,36 @@
 version: 2.1
 
-jobs:
-  build:
+executors:
+  node:
     docker:
       - image: circleci/node:12.18.3
+
+commands:
+  restore_modules:
     steps:
-      - checkout
       - restore_cache:
           key: dependency-cache-{{ checksum "yarn.lock" }}
-      - run:
-          name: install dependencies
-          command: yarn install
+  save_modules:
+    steps:
       - save_cache:
           key: dependency-cache-{{ checksum "yarn.lock" }}
           paths:
             - ./node_modules
-  test:
-    docker:
-      - image: circleci/node:12.18.3
+jobs:
+  build:
+    executor: node
     steps:
       - checkout
-      - restore_cache:
-          key: dependency-cache-{{ checksum "yarn.lock" }}
+      - restore_modules
+      - run:
+          name: install dependencies
+          command: yarn install
+      - save_modules
+  test:
+    executor: node
+    steps:
+      - checkout
+      - restore_modules
       - run:
           name: install dependencies
           command: yarn install
